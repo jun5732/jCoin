@@ -70,8 +70,8 @@ def Sell():
             time.sleep(sleepTime)
             now = datetime.datetime.now()
 
-            # df = pyupbit.get_ohlcv(tabkerName, count=1)
-            df = pyupbit.get_ohlcv(tabkerName, interval="minute60", count=1)
+            df = pyupbit.get_ohlcv(tabkerName, count=1)
+            # df = pyupbit.get_ohlcv(tabkerName, interval="minute60", count=1)
 
             if len(df) < 1:
                 continue
@@ -120,16 +120,14 @@ def Sell():
                 dm = dBuy - dBuy * 0.01 * float(iMinus)
                 dp = dBuy + dBuy * 0.01 * float(ipGap)
 
-
-                print(dm < float(dfData['close'])
-                
                 if dp < float(dfData['close']) or eTime < sellEndTime or dm < float(dfData['close']):
                     bSel = True
                     # if now.time == 9:
                     #     if float(dfData['open']) < float(dfData['close']):
                     #         bSel = False
                     # if bSel:
-                    if float(dfData['open']) < float(dfData['close']):
+                    if True:
+                    # if float(dfData['open']) < float(dfData['close']):
                         odr = upbit.sell_market_order(tabkerName, b['balance'])
                         # odr = upbit.sell_limit_order(tabkerName, dfData['close'] ,b['balance'])
                         time.sleep(sleepTime)
@@ -218,9 +216,9 @@ def buy():
                 bSell = False
                 bBuy = False
                 time.sleep(sleepTime)
-                df = pyupbit.get_ohlcv(ticker, interval="minute1", count=1)
+                # df = pyupbit.get_ohlcv(ticker, interval="day1", count=1)
                 # df = pyupbit.get_ohlcv(ticker, interval="minute60", count=1)
-                # df = pyupbit.get_ohlcv(ticker, count=1)
+                df = pyupbit.get_ohlcv(ticker, count=1)
                 
                 if len(arDf) > 0:
                     bc = False
