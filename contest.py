@@ -3,7 +3,7 @@ import os
 import requests
 import pandas as pd
 import time
-# import pyupbit
+import pyupbit
 import numpy as np
 import datetime
 import threading
@@ -28,7 +28,8 @@ juso_db = pymysql.connect(
     passwd=gpasswd, 
     host=ghost, 
     db=gdb, 
-    charset='utf8'
+    port=3307,
+    charset='utf8'    
 )
 cursor = juso_db.cursor(pymysql.cursors.DictCursor)
 
