@@ -5,7 +5,6 @@ import time
 import pyupbit
 import numpy as np
 import datetime
-from bs4 import BeautifulSoup
 import threading
 import pymysql
 
@@ -16,10 +15,11 @@ pw = None
 
 guser='jun'
 gpasswd='@As73016463'
-ghost='127.0.0.1'
+ghost='45.120.69.37'
 # ghost='3.134.100.230'
 gdb='coin'
 totalGap = 0
+
 #   업비트 로그인
 def jun_LoginUpbit(inId = None, inPw = None):
     global upbit
@@ -350,10 +350,7 @@ def DeleteMyTicker(id, currency):
     sql = """delete from myticker where id = %s and  currency = %s"""
     cursor.execute(sql, (id, currency))
     juso_db.commit()
-    # sql = """update myticker set openprice = 0 where  id = %s and  currency = %s"""
-    # cursor.execute(sql, (id, currency))
-    # juso_db.commit()
-    UpdateTicker(id, currency, 1)
+    # UpdateTicker(id, currency, 1)
 
 
 def InsertMyTicker(id, currency, openprice, buyprice, buyper):
@@ -370,7 +367,7 @@ def InsertMyTicker(id, currency, openprice, buyprice, buyper):
         sql = """insert into myticker(id, currency, openprice, buyprice, buyper) values (%s, %s, %s, %s, %s)"""
         cursor.execute(sql, (id, currency, openprice, buyprice, buyper))
         juso_db.commit()
-        UpdateTicker(id, currency, 0)
+        # UpdateTicker(id, currency, 0)
     return True
 def InsertMyTicker(id, currency, openprice, buyper):
     result = SelectMyTicker(id, currency)
@@ -518,7 +515,7 @@ def select_jOption(id, name):
     conn = db.cursor(pymysql.cursors.DictCursor)
     try:
         
-        sql = "SELECT * FROM joption where id = '" + id + "' and name = '" + name + "';"
+        sql = "SELECT value FROM joption where id = '" + id + "' and name = '" + name + "';"
         conn.execute(sql)
         result = conn.fetchall()
         return result
@@ -683,10 +680,39 @@ def InsertWeekBestLow(id, currency, openprice, buyprice, buyper):
         juso_db.commit()
         UpdateTicker(id, currency, 0)
     return True
-# jun_PROC_InsertMyTicker('jun', 'KRW-AAA', '5', 0,0)
-# print(select_jOptionValue('jun', 'selper'))    
-# print(InsertLog("jun", "KRW-STPT",1,2,3,4,5))
 
 
+    
+#######################################################################################
+#   mylog
+def InsertMyLog(id, currency, buytime, openprice, type):
+    sql = """insert into mylog(id, currency, buytime, type) values (%s, %s, %s, %s)"""
+    cursor.execute(sql, (id, currency, buytime, openprice, type))
+    juso_db.commit()
 
-# print(jun_get_ticker_KRW_DESC7())
+def SelectMyLog(id, currency):    
+    db = pymysql.connect(
+        user=guser, 
+        passwd=gpasswd, 
+        host=ghost, 
+        db=gdb, 
+        charset='utf8'
+    )
+    conn = db.cursor(pymysql.cursors.DictCursor)
+    try:
+        sql = "SELECT buytime FROM mylog where id = '" + id + "' and currency = '" + currency + "';"# and type != 0;"
+        conn.execute(sql)
+        result = conn.fetchall()
+
+        return result
+    except Exception as x:
+        print(x)
+        conn.close()
+        db.close()
+        return None
+    finally:
+        conn.close()
+        db.close()
+        return result
+
+# jun_LoginUpbit('jun','wnsco11')

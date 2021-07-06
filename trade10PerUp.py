@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import math 
 from os import system
 import sys, os
@@ -11,16 +9,10 @@ import time
 import pyupbit
 import numpy as np
 import datetime
-from bs4 import BeautifulSoup
 import threading
 import common as jun
 
 #   거래금액
-iBuyPrice = 7000
-
-def_9Buy = 10
-def_9Plus = 50
-def_DelPer = 10
 
 
 sleepTime = 0.2
@@ -30,6 +22,12 @@ id = "jun"
 pw = "wnsco11"
 
 upbit = jun.jun_LoginUpbit(id ,pw)
+
+iBuyPrice = int(jun.select_jOptionValue(id, 'BuyPrice'))
+def_9Buy = int(jun.select_jOptionValue(id, 'BuyPer'))
+def_9Plus = int(jun.select_jOptionValue(id, 'SelPer'))
+def_DelPer = int(jun.select_jOptionValue(id, 'DeathPer'))
+
 
 arTickers = []
 arDelTickers = []
@@ -65,7 +63,7 @@ def Sell():
 
             if len(df) < 1:
                 continue
-            eTime = df.index[0] +  datetime.timedelta(days=1) - datetime.timedelta(minutes=10)
+            eTime = df.index[0] +  datetime.timedelta(days=1) - datetime.timedelta(minutes=1)
             sellEndTime = df.index[0] +  datetime.timedelta(days=1)
                         
             mDb = jun.SelectMyTicker(id, tabkerName)
@@ -94,9 +92,9 @@ def Sell():
                             
             dm = dBuy - dBuy * 0.01 * float(def_9Plus)
             dp = dBuy + dBuy * 0.01 * float(def_DelPer)
-
             #   익절                                하루 종료           손절
-            if dp < float(dfData['close']) or eTime < sellEndTime or dm < float(dfData['close']):
+            # if dp < float(dfData['close']) or eTime < now < sellEndTime or dm < float(dfData['close']):
+            if dp < float(dfData['close']) or eTime < now < sellEndTime or dm > float(dfData['close']):
                 odr = upbit.sell_market_order(tabkerName, b['balance'])
                 time.sleep(sleepTime)
                 if 'error' in odr:
@@ -106,14 +104,19 @@ def Sell():
                     arTicer.remove(tabkerName)
                     now = datetime.datetime.now()
                     print(str(now) + "  ) " + "Sell GOOD IS " + tabkerName)
+                    jun.InsertMyLog(id, tabkerName, now, 0, 1)
 
         ttt = jun.SelectMyTickerAll_OnlyCurrency(id)
         renTicker = list(set(ttt) - set(arTicer))
         for ticker in renTicker:
             jun.DeleteMyTicker(id,ticker)
+            now = datetime.datetime.now()
+            jun.InsertMyLog(id, ticker, now, 0, 2)
         renTicker = list(set(arTicer) - set(ttt))
         for ticker in renTicker:
             jun.InsertMyTicker_Open(id,ticker ,datetime.datetime.now() ,0,1)
+            now = datetime.datetime.now()
+            jun.InsertMyLog(id, ticker, now, 0, 0)
 
     except Exception as x:
         print(x)
@@ -141,19 +144,25 @@ def buy():
             dOpen = float(dfData['open'])
                                 
             dBuy  = float(dfData['open']) + float(dfData['open']) * 0.01 * float(def_9Buy)
-            now = datetime.datetime.now()            
-            if dfData['close'] > dBuy:
-                if now.hour != 9:
-                    ttt = jun.SelectMyTickerAll_OnlyCurrency(id)
-                    if len(ttt) > 5:
-                        continue
-                print(str(now) + "  ) " + ticker + " BUY " + str(iBuyPrice))
-                odr = upbit.buy_market_order(ticker, iBuyPrice)                    
-                if 'error' in odr:
-                    print(odr)
-                else:
-                    jun.InsertMyTicker_Open(id, ticker, now, 0, 1)
-                    arDf.loc[ticker]=[ df.index[-1], ticker]
+            now = datetime.datetime.now() 
+            eTime = df.index[0] +  datetime.timedelta(days=1) - datetime.timedelta(minutes=1)           
+            if dfData['close'] > dBuy and now < eTime:
+                time.sleep(sleepTime)
+                dfTime = pyupbit.get_ohlcv(ticker, interval="minute10", count=1)
+                if float(dfTime['close']) > float(dfTime['open']):
+                    if now.hour != 9:
+                        ttt = jun.SelectMyTickerAll_OnlyCurrency(id)
+                        if len(ttt) > 5:
+                            continue
+                    print(str(now) + "  ) " + ticker + " BUY " + str(iBuyPrice))
+                    time.sleep(sleepTime)
+                    odr = upbit.buy_market_order(ticker, iBuyPrice)                    
+                    if 'error' in odr:
+                        print(odr)
+                    else:
+                        jun.InsertMyTicker_Open(id, ticker, now, 0, 1)
+                        jun.InsertMyLog(id, ticker, now, 0, 0)
+                        arDf.loc[ticker]=[ df.index[-1], ticker]
                         
     except Exception as x:
         print(x)
@@ -175,6 +184,9 @@ class ThreadSell(threading.Thread):
         while True:
             Sell()
             time.sleep(0.3)
+
+
+
 
 trBuy = ThreadBuy()
 trBuy.start()
