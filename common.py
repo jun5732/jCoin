@@ -7,6 +7,8 @@ import numpy as np
 import datetime
 import threading
 import pymysql
+import socket
+ 
 
 access = None
 secret = None
@@ -16,7 +18,11 @@ pw = None
 guser='jun'
 gpasswd='@As73016463'
 ghost='45.120.69.37'
-# ghost='3.134.100.230'
+
+AllUseSameDB = False
+
+if socket.gethostbyname(socket.gethostname()) == ghost:
+    ghost='localhost'
 gdb='coin'
 totalGap = 0
 
@@ -416,15 +422,17 @@ def UpdateMyTickerPrice(id, currency, openprice):
 def SelectMyTickerAll(id):    
     global g_myTicker
     
-
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
 
     try:
         sql = "SELECT * FROM myticker where id = '" + id + "' "
@@ -447,15 +455,17 @@ def SelectMyTickerAll(id):
 def SelectMyTickerAll_OnlyCurrency(id):    
     global g_myTicker
     
-
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
 
     try:
         sql = "SELECT * FROM myticker where id = '" + id + "' "
@@ -475,14 +485,17 @@ def SelectMyTickerAll_OnlyCurrency(id):
 
 def SelectMyTicker(id, currency):
 
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
     try:
         # g_myTicker = None
         sql = "SELECT * FROM myticker where id = '" + id + "' "
@@ -503,19 +516,22 @@ def SelectMyTicker(id, currency):
 
 #######################################################################################
 #   joption
-def select_jOption(id, name):
+def select_jOption(id):
     
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
     try:
         
-        sql = "SELECT value FROM joption where id = '" + id + "' and name = '" + name + "';"
+        sql = "SELECT name,value FROM joption where id = '" + id + "';"
         conn.execute(sql)
         result = conn.fetchall()
         return result
@@ -540,14 +556,19 @@ def select_jOptionValue(id, name):
 #   proc
 def jun_PROC_InsertMyTicker(id, currency, buytime, openprice, buyper):
     global g_myTicker
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
+
     try:
         # g_myTicker = None
         sql = "CALL PROC_InsertMyTicker('" + id + "','"  + currency + "','" + str(buytime) + "'," + str(openprice) + "," + str(buyper) + ")"
@@ -583,14 +604,18 @@ def jun_PROC_InsertMyTicker(id, currency, buytime, openprice, buyper):
 #   tickerGap3
 def SelecttickerGap3(id):
 
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
+
     try:
         # g_myTicker = None
         sql = "SELECT currency FROM tickerGap3 where id = '" + id + "';"
@@ -627,14 +652,18 @@ def InserttickerGap3(id, currency):
 #   weekbestlow
 def SelectWeekBestLow(id, currency = None):
 
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
+        
     try:
         # g_myTicker = None
         sql = "SELECT * FROM weekbestlow where id = '" + id + "' "
@@ -685,22 +714,28 @@ def InsertWeekBestLow(id, currency, openprice, buyprice, buyper):
     
 #######################################################################################
 #   mylog
-def InsertMyLog(id, currency, buytime, openprice, type):
+def InsertMyLog(id, currency, buytime, type):
     sql = """insert into mylog(id, currency, buytime, type) values (%s, %s, %s, %s)"""
-    cursor.execute(sql, (id, currency, buytime, openprice, type))
+    cursor.execute(sql, (id, currency, buytime, type))
     juso_db.commit()
 
-def SelectMyLog(id, currency):    
-    db = pymysql.connect(
-        user=guser, 
-        passwd=gpasswd, 
-        host=ghost, 
-        db=gdb, 
-        charset='utf8'
-    )
-    conn = db.cursor(pymysql.cursors.DictCursor)
+def SelectMyLogTime(id, currency):
+    db = juso_db 
+    conn = cursor
+    if AllUseSameDB == False:
+        db = pymysql.connect(
+            user=guser, 
+            passwd=gpasswd, 
+            host=ghost, 
+            db=gdb, 
+            charset='utf8'
+        )
+        conn = db.cursor(pymysql.cursors.DictCursor)
     try:
-        sql = "SELECT buytime FROM mylog where id = '" + id + "' and currency = '" + currency + "';"# and type != 0;"
+        sql = "SELECT buytime FROM mylog where id = '" + id + "' and currency = '" + currency + "' "
+        sql += "and type != 0 "
+        sql += "ORDER BY ino DESC LIMIT 1 "
+
         conn.execute(sql)
         result = conn.fetchall()
 
@@ -714,5 +749,6 @@ def SelectMyLog(id, currency):
         conn.close()
         db.close()
         return result
+
 
 # jun_LoginUpbit('jun','wnsco11')

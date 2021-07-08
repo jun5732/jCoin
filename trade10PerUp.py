@@ -1,3 +1,6 @@
+#!/usr/bin/python
+#-*-coding utf-8-*-
+
 import math 
 from os import system
 import sys, os
@@ -11,8 +14,13 @@ import numpy as np
 import datetime
 import threading
 import common as jun
+import logging
+import platform
 
-#   거래금액
+if platform.system() == "Windows":
+    logging.basicConfig(filename='trade10PerUp.txt', level=logging.ERROR)
+else:
+    logging.basicConfig(filename='/root/coin/jun/log/trade10PerUp.txt', level=logging.ERROR)
 
 
 sleepTime = 0.2
@@ -23,14 +31,34 @@ pw = "wnsco11"
 
 upbit = jun.jun_LoginUpbit(id ,pw)
 
-iBuyPrice = int(jun.select_jOptionValue(id, 'BuyPrice'))
-def_9Buy = int(jun.select_jOptionValue(id, 'BuyPer'))
-def_9Plus = int(jun.select_jOptionValue(id, 'SelPer'))
-def_DelPer = int(jun.select_jOptionValue(id, 'DeathPer'))
+iBuyPrice = 0
+def_9Buy = 100
+def_9Plus = 100
+def_DelPer = 100
 
 
 arTickers = []
 arDelTickers = []
+
+def GetOption():
+    global iBuyPrice
+    global def_9Buy
+    global def_9Plus
+    global def_DelPer
+    result = jun.select_jOption(id)
+    for rst in result:
+        if rst['name'] == "BuyPrice":
+            iBuyPrice = int(rst['value'])
+        elif rst['name'] == "BuyPer":
+            def_9Buy = int(rst['value'])
+        elif rst['name'] == "SelPer":
+            def_9Plus = int(rst['value'])
+        elif rst['name'] == "DeathPer":
+            def_DelPer = int(rst['value'])
+        else:
+            ik = 1
+
+
 
 def jun_get_ticker_KRW():
     tickers = pyupbit.get_tickers("KRW")
@@ -39,8 +67,9 @@ def jun_get_ticker_KRW():
     return renTicker
 
 def Sell():
-    try:
+    try:        
         arTicer = []
+        GetOption()
         time.sleep(sleepTime)
         balances = upbit.get_balances()
         HavePrice = 0
@@ -90,8 +119,11 @@ def Sell():
                 time.sleep(sleepTime)
             dBuy  = float(b['avg_buy_price'])
                             
-            dm = dBuy - dBuy * 0.01 * float(def_9Plus)
-            dp = dBuy + dBuy * 0.01 * float(def_DelPer)
+            dm = dBuy - dBuy * 0.01 * float(def_DelPer)
+            dp = dBuy + dBuy * 0.01 * float(def_9Plus)
+
+            if tabkerName == "KRW-WAXP":
+                print(tabkerName + " : " + str(dm) +  " > " +  str(dfData['close']))
             #   익절                                하루 종료           손절
             # if dp < float(dfData['close']) or eTime < now < sellEndTime or dm < float(dfData['close']):
             if dp < float(dfData['close']) or eTime < now < sellEndTime or dm > float(dfData['close']):
@@ -103,27 +135,31 @@ def Sell():
                     jun.DeleteMyTicker(id,tabkerName)
                     arTicer.remove(tabkerName)
                     now = datetime.datetime.now()
-                    print(str(now) + "  ) " + "Sell GOOD IS " + tabkerName)
-                    jun.InsertMyLog(id, tabkerName, now, 0, 1)
+                    sLog = str(now) + "  ) " + "Sell IS " + tabkerName 
+                    print(sLog)
+                    logging.error(sLog)
+                    jun.InsertMyLog(id, tabkerName, now, 1)
 
         ttt = jun.SelectMyTickerAll_OnlyCurrency(id)
         renTicker = list(set(ttt) - set(arTicer))
         for ticker in renTicker:
             jun.DeleteMyTicker(id,ticker)
             now = datetime.datetime.now()
-            jun.InsertMyLog(id, ticker, now, 0, 2)
+            jun.InsertMyLog(id, ticker, now, 2)
         renTicker = list(set(arTicer) - set(ttt))
         for ticker in renTicker:
             jun.InsertMyTicker_Open(id,ticker ,datetime.datetime.now() ,0,1)
             now = datetime.datetime.now()
-            jun.InsertMyLog(id, ticker, now, 0, 0)
+            jun.InsertMyLog(id, ticker, now, 0)
 
     except Exception as x:
+        logging.error(x)
         print(x)
         
 def buy():
     global arDf
     try:
+        GetOption()
         time.sleep(sleepTime)
         tickers = jun_get_ticker_KRW()
 
@@ -145,7 +181,8 @@ def buy():
                                 
             dBuy  = float(dfData['open']) + float(dfData['open']) * 0.01 * float(def_9Buy)
             now = datetime.datetime.now() 
-            eTime = df.index[0] +  datetime.timedelta(days=1) - datetime.timedelta(minutes=1)           
+            eTime = df.index[0] +  datetime.timedelta(days=1) - datetime.timedelta(minutes=1)         
+            print(ticker + " : " + str(dfData['close']) +  " > "  + str(dBuy))
             if dfData['close'] > dBuy and now < eTime:
                 time.sleep(sleepTime)
                 dfTime = pyupbit.get_ohlcv(ticker, interval="minute10", count=1)
@@ -154,17 +191,22 @@ def buy():
                         ttt = jun.SelectMyTickerAll_OnlyCurrency(id)
                         if len(ttt) > 5:
                             continue
-                    print(str(now) + "  ) " + ticker + " BUY " + str(iBuyPrice))
+                    
+                    sLog = str(now) + "  ) " + ticker + " BUY " + str(iBuyPrice) 
+                    print(sLog)
+                    logging.error(sLog)
+
                     time.sleep(sleepTime)
                     odr = upbit.buy_market_order(ticker, iBuyPrice)                    
                     if 'error' in odr:
                         print(odr)
                     else:
                         jun.InsertMyTicker_Open(id, ticker, now, 0, 1)
-                        jun.InsertMyLog(id, ticker, now, 0, 0)
+                        jun.InsertMyLog(id, ticker, now, 0)
                         arDf.loc[ticker]=[ df.index[-1], ticker]
                         
     except Exception as x:
+        logging.error(x)
         print(x)
         time.sleep(10)
 
@@ -186,7 +228,14 @@ class ThreadSell(threading.Thread):
             time.sleep(0.3)
 
 
+GetOption()
 
+now = datetime.datetime.now()
+logging.error(' START => ' + str(now))
+logging.error("iBuyPrice is " + str(iBuyPrice))
+logging.error("def_9Buy is " + str(def_9Buy))
+logging.error("def_9Plus is " + str(def_9Plus))
+logging.error("def_DelPer is " + str(def_DelPer))
 
 trBuy = ThreadBuy()
 trBuy.start()
