@@ -116,7 +116,7 @@ def IsSameTimeTicker(ticker):
             return False
         else:
             return True
-    return False
+    return True
 
 # iBuyPer 보다 높은 종목을 찾는다.
 def FindUpTicker():
@@ -135,6 +135,17 @@ def FindUpTicker():
         fGap = 100 * float(dfData['close']) / float(dfData['open']) - 100
         if fGap > iBuyPer:
             if IsSameTimeTicker(ticker):
+                time.sleep(sleepTime)
+                odr = upbit.buy_market_order(ticker, iBuyPrice)
+                if 'error' in odr:
+                    print(odr)
+                else:
+                    now = datetime.datetime.now()
+                    sLog = str(now) + "  ) " + "Add Buy " + ticker
+                    WriteLog(sLog)
+                    jun.InsertMyTicker_Open(id, ticker, now, 0, 1)
+                    time.sleep(DBsleepTime)
+                    jun.InsertMyLog(id, ticker, now, 0)
                 return ticker
     return None
 
@@ -145,9 +156,12 @@ def WaitSell(ticker):
     balances = upbit.get_balances()
     myAvgPrice = 0
     myBalance = 0
-
-    for b in balances:        
-        if "KRW-" + b['currency'] == ticker:            
+    if balances is None:
+        return
+    for b in balances:   
+        if b == "error":
+            continue
+        if "KRW-" + b['currency'] == ticker:
             myAvgPrice = float(b['avg_buy_price'])  
             myBalance = b['balance']          
         
@@ -156,7 +170,7 @@ def WaitSell(ticker):
             dfData = df.iloc[0]
     
             fGap = 100 * float(dfData['close']) / myAvgPrice - 100
-            print(ticker + " is " + str(fGap))
+            
             #   익절
             if fGap > iSelPer:
                 time.sleep(sleepTime)
@@ -174,8 +188,7 @@ def WaitSell(ticker):
             #   추가매수
             if fGap < 0 and abs(fGap) / iAddBuyPer > 1:
                 time.sleep(sleepTime)
-                iPer = abs(fGap) / iAddBuyPer
-                bPrice = iBuyPrice * (iPer + 1)
+                bPrice = myAvgPrice * 2
                 odr = upbit.buy_market_order(ticker, bPrice)
                 if 'error' in odr:
                     print(odr)
