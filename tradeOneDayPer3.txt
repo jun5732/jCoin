@@ -1,0 +1,103 @@
+ERROR:root: START => 2021-07-10 11:43:15.599781
+ERROR:root:iBuyPrice is 7000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 3
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 11:43:52.255039
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 17:49:55.674634
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 17:52:57.218788
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 17:57:47.675414
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root:2021-07-10 18:11:42.788670  ) Add Buy KRW-DKA
+ERROR:root: START => 2021-07-10 19:18:22.562779
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 19:52:06.870296
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 19:55:01.479806
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-10 20:21:47.501576
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-11 12:53:20.931201
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 5
+ERROR:root: START => 2021-07-11 12:59:09.661031
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 3
+ERROR:root: START => 2021-07-11 13:05:59.699286
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 3
+ERROR:root: START => 2021-07-11 13:06:16.664044
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 3
+ERROR:root: START => 2021-07-11 13:08:18.869576
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 3
+ERROR:root: START => 2021-07-11 22:21:38.833460
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 5
+ERROR:root:iSelPer is 3
+ERROR:root:iAddBuyPer is 3
+ERROR:root: START => 2021-07-11 23:44:56.511483
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 3
+ERROR:root:iSelPer is 1
+ERROR:root:iAddBuyPer is 3
+ERROR:root: START => 2021-07-11 23:45:27.370073
+ERROR:root:iBuyPrice is 10000
+ERROR:root:istick is 60
+ERROR:root:iBuyPer is 3
+ERROR:root:iSelPer is 1
+ERROR:root:iAddBuyPer is 3

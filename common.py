@@ -353,10 +353,12 @@ def UpdateTicker(id, currency, autouse):
 #######################################################################################
 #   myticker
 def DeleteMyTicker(id, currency):
-    sql = """delete from myticker where id = %s and  currency = %s"""
-    cursor.execute(sql, (id, currency))
-    juso_db.commit()
-    # UpdateTicker(id, currency, 1)
+    try:
+        sql = """delete from myticker where id = %s and  currency = %s"""
+        cursor.execute(sql, (id, currency))
+        juso_db.commit()     
+    except Exception as x:
+        print(x)
 
 
 def InsertMyTicker(id, currency, openprice, buyprice, buyper):
