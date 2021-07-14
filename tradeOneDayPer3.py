@@ -42,6 +42,7 @@ iBuyPer = 3
 iSelPer = 3
 iAddBuyPer = 5
 iMaxCount = 2
+iDeathPer = 7
 
 
 sleepTime = 0.2
@@ -104,6 +105,9 @@ def GetOption():
             iAddBuyPer = int(rst['value'])
         elif rst['name'] == "MaxCount":
             iMaxCount = int(rst['value'])
+        elif rst['name'] == "DeathPer":
+            iDeathPer = int(rst['value'])
+            
         else:
             ik = 1
 
@@ -194,6 +198,21 @@ def WaitSell(myTicker):
                 fGap = 100 * float(dfData['close']) / myAvgPrice - 100
                 
                 now = datetime.datetime.now()
+
+                # 손절
+                if fGap > iDeathPer:
+                    time.sleep(sleepTime)
+                    odr = upbit.sell_market_order(ticker, b['balance'])
+                    time.sleep(sleepTime)
+                    if 'error' in odr:
+                            print(odr)
+                    else:
+                        arTicer.remove(ticker)
+                        jun.DeleteMyTicker(id,ticker)
+                        time.sleep(DBsleepTime)
+                        sLog = str(now) + "  ) " + "Sell 181818 IS " + ticker
+                        WriteLog(sLog)
+                        jun.InsertMyLog(id, ticker, now, 18)                
                 #   익절
                 if fGap > iSelPer:
                     # if True:
@@ -275,6 +294,7 @@ WriteLog("iBuyPer is " + str(iBuyPer))
 WriteLog("iSelPer is " + str(iSelPer))
 WriteLog("iAddBuyPer is " + str(iAddBuyPer))
 WriteLog("iMaxCount is " + str(iMaxCount))
+WriteLog("iDeathPer is " + str(iDeathPer))
 
 trBuy = ThreadBuy()
 trBuy.start()
