@@ -71,10 +71,12 @@ def AllSell():
         else:
             jun.DeleteMyTicker(id,ticker)
             now = datetime.datetime.now()
-            sLog = str(now) + "  ) " + "Sell IS " + ticker
-            WriteLog(sLog)
+            sLog = str(now) + "  ) " + "Time End Sell IS " + ticker
+            WriteLog(sLog) 
+            jun.DeleteMyTicker(id,ticker)
+            time.sleep(DBsleepTime)
             jun.InsertMyLog(id, ticker, now, 1)
-
+            
 #LOG 저장
 def WriteLog(str):
     logging.error(str)
@@ -161,6 +163,11 @@ def WaitSell(myTicker):
     myAvgPrice = 0
     myBalance = 0
 
+    now = datetime.datetime.now()        
+    if now.hour == 8:
+        if now.minute == 59:
+            AllSell()
+            return
         
     if balances is None:
         return
@@ -189,8 +196,8 @@ def WaitSell(myTicker):
                 now = datetime.datetime.now()
                 #   익절
                 if fGap > iSelPer:
-                    if True:
-                    # if dfData['close'] < dfData['open']:
+                    # if True:
+                    if dfData['close'] < dfData['open']:
                         time.sleep(sleepTime)
                         odr = upbit.sell_market_order(ticker, b['balance'])
                         time.sleep(sleepTime)
@@ -205,20 +212,20 @@ def WaitSell(myTicker):
                             jun.InsertMyLog(id, ticker, now, 1)
                 #   추가매수
                 if fGap < 0 and abs(fGap) / iAddBuyPer > 1:
-                    time.sleep(sleepTime)
-                    bPrice = myAvgPrice * float(b['balance']) * 2
-                    print(str(bPrice))
-                    odr = upbit.buy_market_order(ticker, bPrice)
-                    if 'error' in odr:
-                        print(odr)
-                    else:
-                        
-                        sLog = str(now) + "  ) " + "Add Buy " + ticker
-                        WriteLog(sLog)
-                        now = datetime.datetime.now() 
-                        jun.InsertMyTicker_Open(id, ticker, now, 0, 1)
-                        time.sleep(DBsleepTime)
-                        jun.InsertMyLog(id, ticker, now, 0)
+                    if dfData['close'] > dfData['open']:
+                        time.sleep(sleepTime)
+                        bPrice = myAvgPrice * float(b['balance']) * 2
+                        print(str(bPrice))
+                        odr = upbit.buy_market_order(ticker, bPrice)
+                        if 'error' in odr:
+                            print(odr)
+                        else:
+                            now = datetime.datetime.now()                         
+                            sLog = str(now) + "  ) " + "Add Buy " + ticker
+                            WriteLog(sLog)
+                            jun.InsertMyTicker_Open(id, ticker, now, 0, 1)
+                            time.sleep(DBsleepTime)
+                            jun.InsertMyLog(id, ticker, now, 0)
         
     ttt = jun.SelectMyTickerAll_OnlyCurrency(id)
     renTicker = list(set(ttt) - set(arTicer))
