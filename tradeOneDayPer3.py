@@ -137,6 +137,10 @@ def FindUpTicker():
         df = pyupbit.get_ohlcv(ticker, interval="minute" + str(istick), count=1)      
         if df is None:
             continue
+        now = datetime.datetime.now() 
+        eTime = df.index[0] +  datetime.timedelta(minutes=istick) - datetime.timedelta(minutes=1)
+        if now > eTime:
+            continue
         dfData = df.iloc[0]
         if float(dfData['close']) < float(dfData['open']):
             continue
@@ -189,7 +193,7 @@ def WaitSell(myTicker):
                 myBalance = b['balance']          
             
                 time.sleep(sleepTime)
-                df = pyupbit.get_ohlcv(ticker, interval="minute3", count=1)      
+                df = pyupbit.get_ohlcv(ticker, interval="minute10", count=1)
                 if df is None:
                     continue
                 # df = pyupbit.get_ohlcv(ticker, count=1)
@@ -231,6 +235,9 @@ def WaitSell(myTicker):
                             jun.InsertMyLog(id, ticker, now, 1)
                 #   추가매수
                 if fGap < 0 and abs(fGap) / iAddBuyPer > 1:
+                    eTime = df.index[0] +  datetime.timedelta(minutes=10) - datetime.timedelta(minutes=1)
+                    if now < eTime:
+                        continue
                     if dfData['close'] > dfData['open']:
                         time.sleep(sleepTime)
                         bPrice = myAvgPrice * float(b['balance']) * 2
